@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, Divider, Alert, Checkbox, Typography, Space } from 'antd';
-import { UserOutlined, LockOutlined, GoogleOutlined, WifiOutlined } from '@ant-design/icons';
+import React, { useState } from 'react';
+import { Form, Input, Button,  Alert, Checkbox, Typography, Space } from 'antd';
+import { UserOutlined, LockOutlined, WifiOutlined, } from '@ant-design/icons';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useNavigate, Link } from 'react-router-dom';
@@ -10,9 +10,8 @@ const { Title, Text } = Typography;
 
 const LoginPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
-  const { login, loginWithGoogle, isOnline } = useAuth();
+  const { login, isOnline } = useAuth();
   const { theme } = useTheme();
   const navigate = useNavigate();
   const isDark = theme === 'dark';
@@ -29,27 +28,6 @@ const LoginPage: React.FC = () => {
     }
   };
 
-  const handleGoogleLogin = async () => {
-    setGoogleLoading(true);
-    try {
-      await loginWithGoogle();
-      navigate('/dashboard');
-    } catch (error: any) {
-      // Error already handled by context
-    } finally {
-      setGoogleLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    // Cleanup function to remove script
-    return () => {
-      const googleScript = document.querySelector('script[src="https://accounts.google.com/gsi/client"]');
-      if (googleScript) {
-        googleScript.remove();
-      }
-    };
-  }, []);
 
   return (
     <div
@@ -89,7 +67,6 @@ const LoginPage: React.FC = () => {
                 display: 'block',
               }}
               onError={(e) => {
-                // Fallback if logo doesn't load
                 e.currentTarget.style.display = 'none';
               }}
             />
@@ -283,26 +260,6 @@ const LoginPage: React.FC = () => {
                 style={{ marginBottom: 24 }}
               />
             )}
-
-            <div id="google-signin-button" style={{ marginBottom: 24 }}>
-              <Button
-                icon={<GoogleOutlined />}
-                onClick={handleGoogleLogin}
-                loading={googleLoading}
-                disabled={!isOnline}
-                block
-                size="large"
-                style={{ height: 44 }}
-              >
-                Continue with Google
-              </Button>
-            </div>
-
-            <Divider plain style={{ margin: '24px 0' }}>
-              <Text type="secondary" style={{ fontSize: 13 }}>
-                or
-              </Text>
-            </Divider>
 
             <Form name="login" onFinish={onFinish} layout="vertical" size="large">
               <Form.Item

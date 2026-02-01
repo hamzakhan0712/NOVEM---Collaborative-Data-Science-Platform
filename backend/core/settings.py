@@ -27,20 +27,15 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist', 
     'corsheaders',
     'django_redis',
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
     
     # Local apps
     'accounts',
     'projects',
-    'connectors',
-    'analytics',
-    'collaboration',
-    'community',
     'audit',
     'workspaces',
+    'datasources',      # NEW
+    'pipelines',        # NEW
+    'datasets',         # NEW
 ]
 
 MIDDLEWARE = [
@@ -52,7 +47,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -233,8 +227,6 @@ SITE_ID = 1
 # Email configuration
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-FRONTEND_URL = 'http://localhost:1420'
-
 # Allauth settings
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
@@ -246,9 +238,8 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 
-GOOGLE_CLIENT_ID = config('GOOGLE_CLIENT_ID')
-GOOGLE_CLIENT_SECRET = config('GOOGLE_CLIENT_SECRET')
-
+BACKEND_URL = config('BACKEND_URL')
+FRONTEND_URL = config('FRONTEND_URL')
 
 # Logging Configuration
 LOGGING = {
@@ -278,3 +269,25 @@ LOGGING = {
         },
     },
 }
+
+# Generate with: python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+ENCRYPTION_KEY = os.environ.get('ENCRYPTION_KEY', 'GENERATE_A_NEW_KEY_FOR_PRODUCTION')
+
+# NEW: DuckDB storage path
+DUCKDB_STORAGE_PATH = os.path.join(BASE_DIR, 'data', 'duckdb')
+os.makedirs(DUCKDB_STORAGE_PATH, exist_ok=True)
+
+# NEW: Celery Configuration (for async pipeline execution)
+CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379/0')
+CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'UTC'
+
+
+
+
+
+
+

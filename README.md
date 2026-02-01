@@ -35,7 +35,7 @@ NOVEM is an end-to-end data science platform that combines local-first computati
 ## ✨ Key Features
 
 ### Authentication & Identity
-- Google Sign-In and email/password authentication
+- email/password authentication
 - Explicit account lifecycle tracking (invited, registered, onboarded, active, suspended)
 - Short-lived access tokens with refresh token rotation
 - 7-day offline grace period for authenticated users

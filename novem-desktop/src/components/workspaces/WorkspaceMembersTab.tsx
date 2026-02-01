@@ -649,7 +649,8 @@ const WorkspaceMembersTab: React.FC<WorkspaceMembersTabProps> = ({
   ];
 
   return (
-    <div style={{ padding: '24px', paddingTop:0}}>
+    <div
+    >
       <div style={{ paddingBottom:24, display: 'flex', justifyContent: 'space-between' }}>
         <Text type="secondary">
           Manage workspace members and their permissions

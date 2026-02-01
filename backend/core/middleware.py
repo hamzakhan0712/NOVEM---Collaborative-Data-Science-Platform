@@ -22,8 +22,6 @@ class AuditMiddleware:
             # Determine action from path
             action_map = {
                 '/api/projects/': 'project_action',
-                '/api/analytics/': 'analytics_action',
-                '/api/connectors/': 'connector_action',
             }
             
             for path_prefix, action in action_map.items():

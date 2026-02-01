@@ -42,6 +42,7 @@ import WorkspaceProjectsTab from '../components/workspaces/WorkspaceProjectsTab'
 import WorkspaceMembersTab from '../components/workspaces/WorkspaceMembersTab';
 import WorkspaceActivityTab from '../components/workspaces/WorkspaceActivityTab';
 import WorkspaceJoinRequestsBadge from '../components/workspaces/WorkspaceJoinRequestsBadge';
+import WorkspaceSettingsTab from '../components/workspaces/WorkspaceSettingsTab';
 
 const { Title, Text } = Typography;
 
@@ -202,9 +203,35 @@ const WorkspaceDetailPage: React.FC = () => {
       key: 'settings',
       label: 'Settings',
       icon: <SettingOutlined />,
-      children: <div style={{ padding: '24px' }}>Settings coming soon...</div>,
+      children: (
+        <WorkspaceSettingsTab
+          workspace={workspace}
+          onUpdate={() => {
+            loadWorkspace();
+            loadProjects();
+          }}
+        />
+      ),
     },
   ];
+
+
+  // Get avatar URL with backend domain
+  const getAvatarUrl = () => {
+    if (!workspace.avatar) return null;
+    
+    // If it's already a full URL (http/https), use it
+    if (workspace.avatar.startsWith('http')) {
+      return workspace.avatar;
+    }
+    
+    // Otherwise, prepend backend URL
+    const backendUrl = 'http://localhost:8000';
+    return `${backendUrl}${workspace.avatar}`;
+  };
+
+  const avatarUrl = getAvatarUrl();
+
 
   return (
     <MainLayout>
@@ -233,20 +260,20 @@ const WorkspaceDetailPage: React.FC = () => {
         >
           <Space direction="vertical" size="small">
             <Space align="center">
-              {workspace.avatar ? (
-                <img
-                  src={workspace.avatar}
-                  alt={workspace.name}
-                  style={{
-                    width: '32px',
-                    height: '32px',
-                    borderRadius: '6px',
-                    objectFit: 'cover',
-                  }}
-                />
-              ) : (
-                <TeamOutlined style={{ fontSize: '32px', color: colors.logoCyan }} />
-              )}
+              {avatarUrl ? (
+  <img
+    src={avatarUrl}
+    alt={workspace.name}
+    style={{
+      width: '32px',
+      height: '32px',
+      borderRadius: '6px',
+      objectFit: 'cover',
+    }}
+  />
+) : (
+  <TeamOutlined style={{ fontSize: '32px', color: colors.logoCyan }} />
+)}
               <Title level={2} style={{ margin: 0 }}>
                 {workspace.name}
               </Title>

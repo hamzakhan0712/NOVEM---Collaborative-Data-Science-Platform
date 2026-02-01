@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  Card,
   Button,
   Form,
   Input,
@@ -69,7 +68,7 @@ const OnboardingPage: React.FC = () => {
       }
       setCurrentStep(currentStep + 1);
     } catch (err) {
-      console.log('Validation failed:', err);
+      // Validation failed
     }
   };
 
@@ -79,32 +78,41 @@ const OnboardingPage: React.FC = () => {
 
   const handleSubmit = async () => {
     try {
-      const values = await form.validateFields();
+      const allValues = await form.validateFields();
       setLoading(true);
 
-      console.log('📝 Submitting onboarding:', values);
+      const profileData = {
+        first_name: allValues.first_name,
+        last_name: allValues.last_name,
+        bio: allValues.bio || '',
+        organization: allValues.organization,
+        job_title: allValues.job_title,
+        location: allValues.location,
+      };
 
-      // Update Profile
-      await backendAPI.updateProfile({
-        first_name: values.first_name,
-        last_name: values.last_name,
-        bio: values.bio || '',
-        organization: values.organization || '',
-        job_title: values.job_title || '',
-        location: values.location || '',
-      });
+      if (!profileData.first_name || !profileData.last_name || 
+          !profileData.organization || !profileData.job_title || !profileData.location) {
+        message.error('Please complete all required fields in previous steps');
+        setLoading(false);
+        if (!profileData.first_name || !profileData.last_name) {
+          setCurrentStep(0);
+        } else {
+          setCurrentStep(1);
+        }
+        return;
+      }
 
-      // Create Workspace
-      await backendAPI.createWorkspace({
-        name: values.workspace_name,
-        workspace_type: values.workspace_type,
-        visibility: values.visibility,
-        description: values.workspace_description || '',
+      await completeOnboarding(profileData);
+
+      const workspaceData = {
+        name: allValues.workspace_name,
+        workspace_type: allValues.workspace_type,
+        visibility: allValues.visibility,
+        description: allValues.workspace_description || '',
         allow_member_project_creation: true,
-      });
-
-      // Complete Onboarding
-      await completeOnboarding();
+      };
+      
+      await backendAPI.createWorkspace(workspaceData);
 
       setCompleted(true);
       message.success('Setup completed successfully');
@@ -114,8 +122,6 @@ const OnboardingPage: React.FC = () => {
       }, 1500);
 
     } catch (err: any) {
-      console.error('❌ Onboarding error:', err);
-      
       if (err.errorFields) {
         message.error('Please complete all required fields');
         return;
@@ -123,7 +129,10 @@ const OnboardingPage: React.FC = () => {
 
       const errorMessage = err.response?.data?.error 
         || err.response?.data?.name?.[0]
+        || err.response?.data?.first_name?.[0]
+        || err.response?.data?.organization?.[0]
         || err.response?.data?.detail
+        || err.message
         || 'Failed to complete setup';
       
       message.error(errorMessage);
@@ -157,8 +166,8 @@ const OnboardingPage: React.FC = () => {
               height: '80px',
               borderRadius: '50%',
               backgroundColor: isDark 
-                ? 'rgba(0, 200, 83, 0.1)' 
-                : 'rgba(0, 200, 83, 0.08)',
+                ? colors.backgroundTertiaryDark
+                : colors.backgroundTertiary,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -198,350 +207,506 @@ const OnboardingPage: React.FC = () => {
   return (
     <div
       style={{
-        minHeight: '100vh',
-        backgroundColor: isDark ? colors.backgroundPrimaryDark : colors.backgroundSecondary,
         display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '24px',
+        height: '100vh',
+        backgroundColor: isDark ? colors.backgroundPrimaryDark : colors.backgroundPrimary,
       }}
     >
       <div
         style={{
-          width: '100%',
-          maxWidth: '800px',
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          padding: '0 80px',
+          backgroundColor: isDark ? colors.backgroundSecondaryDark : colors.backgroundSecondary,
+          borderRight: `1px solid ${isDark ? colors.borderDark : colors.border}`,
         }}
       >
-        {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-          <Space direction="vertical" size={8} style={{ width: '100%' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
-              <img
-                src="/logo.png"
-                alt="NOVEM"
-                style={{ height: '32px', width: 'auto' }}
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none';
+        <div style={{ maxWidth: 480 }}>
+          <div style={{ 
+            marginBottom: 48,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 24,
+          }}>
+            <img 
+              src="/logo.png" 
+              alt="NOVEM Logo" 
+              style={{ 
+                height: '120px',
+                width: 'auto',
+                display: 'block',
+              }}
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+              }}
+            />
+            <Title
+              level={1}
+              style={{
+                fontSize: 74,
+                fontWeight: 700,
+                margin: 0,
+                color: colors.logoCyan,
+                lineHeight: 1,
+              }}
+            >
+              NOVEM
+            </Title>
+          </div>
+
+          <Title
+            level={2}
+            style={{
+              fontSize: 32,
+              fontWeight: 600,
+              marginBottom: 24,
+              color: isDark ? colors.textPrimaryDark : colors.textPrimary,
+            }}
+          >
+            Welcome aboard!
+          </Title>
+          <Text
+            style={{
+              fontSize: 16,
+              lineHeight: 1.6,
+              color: isDark ? colors.textSecondaryDark : colors.textSecondary,
+              display: 'block',
+              marginBottom: 48,
+            }}
+          >
+            Let's set up your account and create your first workspace to get started with NOVEM.
+          </Text>
+
+          <Space direction="vertical" size={16} style={{ width: '100%' }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16 }}>
+              <div
+                style={{
+                  width: 4,
+                  height: 4,
+                  borderRadius: 2,
+                  backgroundColor: colors.logoCyan,
+                  marginTop: 8,
+                  flexShrink: 0,
                 }}
               />
-              <Text
-                style={{
-                  fontSize: '24px',
-                  fontWeight: 600,
-                  color: colors.logoCyan,
-                  letterSpacing: '-0.02em',
-                }}
-              >
-                NOVEM
-              </Text>
+              <div>
+                <Text
+                  strong
+                  style={{
+                    fontSize: 15,
+                    color: isDark ? colors.textPrimaryDark : colors.textPrimary,
+                    display: 'block',
+                    marginBottom: 4,
+                  }}
+                >
+                  Complete Control
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    color: isDark ? colors.textSecondaryDark : colors.textSecondary,
+                  }}
+                >
+                  Your data stays on your device
+                </Text>
+              </div>
             </div>
-            <Title 
-              level={2} 
-              style={{ 
-                margin: '16px 0 0 0',
-                fontWeight: 600,
-                fontSize: '28px',
-                letterSpacing: '-0.02em',
-                color: isDark ? colors.textPrimaryDark : colors.textPrimary,
-              }}
-            >
-              Welcome to NOVEM
-            </Title>
-            <Text
-              style={{
-                fontSize: '15px',
-                color: isDark ? colors.textSecondaryDark : colors.textSecondary,
-              }}
-            >
-              Let's set up your account and workspace
-            </Text>
+
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16 }}>
+              <div
+                style={{
+                  width: 4,
+                  height: 4,
+                  borderRadius: 2,
+                  backgroundColor: colors.logoCyan,
+                  marginTop: 8,
+                  flexShrink: 0,
+                }}
+              />
+              <div>
+                <Text
+                  strong
+                  style={{
+                    fontSize: 15,
+                    color: isDark ? colors.textPrimaryDark : colors.textPrimary,
+                    display: 'block',
+                    marginBottom: 4,
+                  }}
+                >
+                  Team Collaboration
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    color: isDark ? colors.textSecondaryDark : colors.textSecondary,
+                  }}
+                >
+                  Share insights while maintaining privacy
+                </Text>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16 }}>
+              <div
+                style={{
+                  width: 4,
+                  height: 4,
+                  borderRadius: 2,
+                  backgroundColor: colors.logoCyan,
+                  marginTop: 8,
+                  flexShrink: 0,
+                }}
+              />
+              <div>
+                <Text
+                  strong
+                  style={{
+                    fontSize: 15,
+                    color: isDark ? colors.textPrimaryDark : colors.textPrimary,
+                    display: 'block',
+                    marginBottom: 4,
+                  }}
+                >
+                  Advanced Analytics
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    color: isDark ? colors.textSecondaryDark : colors.textSecondary,
+                  }}
+                >
+                  EDA, ML, forecasting and more
+                </Text>
+              </div>
+            </div>
           </Space>
         </div>
+      </div>
 
-        {/* Progress Steps */}
-        <Card
+      <div
+        style={{
+          width: 600,
+          display: 'flex',
+          flexDirection: 'column',
+          overflowY: 'auto',
+        }}
+      >
+        <div
           style={{
-            backgroundColor: isDark ? colors.surfaceDark : colors.surfaceLight,
-            border: `1px solid ${isDark ? colors.borderDark : colors.border}`,
-            marginBottom: '24px',
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'start',
+            padding: '30px 64px',
+            minHeight: '100vh',
           }}
-          bodyStyle={{ padding: '32px 40px' }}
         >
-          <Steps
-            current={currentStep}
-            items={steps}
-            style={{ marginBottom: '0' }}
-          />
-        </Card>
+          <div style={{ marginBottom: 48 }}>
+            <Text
+              strong
+              style={{
+                fontSize: 13,
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px',
+                color: isDark ? colors.textTertiaryDark : colors.textTertiary,
+                display: 'block',
+                marginBottom: 16,
+              }}
+            >
+              Progress
+            </Text>
+            <Steps
+              current={currentStep}
+              direction="horizontal"
+              items={steps.map((step, index) => ({
+                title: (
+                  <Text
+                    strong={index === currentStep}
+                    style={{
+                      fontSize: 15,
+                      color: index === currentStep
+                        ? (isDark ? colors.textPrimaryDark : colors.textPrimary)
+                        : (isDark ? colors.textSecondaryDark : colors.textSecondary),
+                    }}
+                  >
+                    {step.title}
+                  </Text>
+                ),
+                description: (
+                  <Text
+                    style={{
+                      fontSize: 13,
+                      color: isDark ? colors.textTertiaryDark : colors.textTertiary,
+                    }}
+                  >
+                    {step.description}
+                  </Text>
+                ),
+              }))}
+            />
+          </div>
 
-        {/* Form Card */}
-        <Card
-          style={{
-            backgroundColor: isDark ? colors.surfaceDark : colors.surfaceLight,
-            border: `1px solid ${isDark ? colors.borderDark : colors.border}`,
-          }}
-          bodyStyle={{ padding: '40px' }}
-        >
           <Form
             form={form}
             layout="vertical"
+            size="large"
             initialValues={{
               first_name: user?.first_name || '',
               last_name: user?.last_name || '',
               visibility: 'private',
             }}
+            style={{ maxWidth: 480, width: '100%' }}
           >
-            {/* Step 1: Profile */}
-            {currentStep === 0 && (
-              <div>
-                <div style={{ marginBottom: '32px' }}>
-                  <Title 
-                    level={4} 
-                    style={{ 
-                      marginBottom: '8px',
-                      fontWeight: 600,
-                      color: isDark ? colors.textPrimaryDark : colors.textPrimary,
-                    }}
-                  >
-                    Your Profile
-                  </Title>
-                  <Text
-                    style={{
-                      fontSize: '14px',
-                      color: isDark ? colors.textSecondaryDark : colors.textSecondary,
-                    }}
-                  >
-                    Tell us about yourself
-                  </Text>
-                </div>
-
-                <Row gutter={16}>
-                  <Col span={12}>
-                    <Form.Item
-                      name="first_name"
-                      label={<Text strong>First Name</Text>}
-                      rules={[
-                        { required: true, message: 'Required' },
-                        { min: 2, message: 'Minimum 2 characters' },
-                      ]}
-                    >
-                      <Input 
-                        size="large" 
-                        placeholder="John"
-                      />
-                    </Form.Item>
-                  </Col>
-                  <Col span={12}>
-                    <Form.Item
-                      name="last_name"
-                      label={<Text strong>Last Name</Text>}
-                      rules={[
-                        { required: true, message: 'Required' },
-                        { min: 2, message: 'Minimum 2 characters' },
-                      ]}
-                    >
-                      <Input 
-                        size="large" 
-                        placeholder="Doe"
-                      />
-                    </Form.Item>
-                  </Col>
-                </Row>
-
-                <Form.Item
-                  name="bio"
-                  label={<Text strong>Bio <Text type="secondary">(Optional)</Text></Text>}
+            <div style={{ display: currentStep === 0 ? 'block' : 'none' }}>
+              <div style={{ marginBottom: 32 }}>
+                <Title 
+                  level={3} 
+                  style={{ 
+                    marginBottom: 8,
+                    fontSize: 24,
+                    fontWeight: 600,
+                    color: isDark ? colors.textPrimaryDark : colors.textPrimary,
+                  }}
                 >
-                  <TextArea
-                    rows={3}
-                    placeholder="Brief description about yourself..."
-                    maxLength={500}
-                    showCount
-                    style={{
-                      resize: 'none',
-                    }}
-                  />
-                </Form.Item>
+                  Your Profile
+                </Title>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    color: isDark ? colors.textSecondaryDark : colors.textSecondary,
+                  }}
+                >
+                  Tell us about yourself
+                </Text>
               </div>
-            )}
 
-            {/* Step 2: Organization */}
-            {currentStep === 1 && (
-              <div>
-                <div style={{ marginBottom: '32px' }}>
-                  <Title 
-                    level={4} 
-                    style={{ 
-                      marginBottom: '8px',
-                      fontWeight: 600,
-                      color: isDark ? colors.textPrimaryDark : colors.textPrimary,
-                    }}
+              <Row gutter={12}>
+                <Col span={12}>
+                  <Form.Item
+                    name="first_name"
+                    label="First Name"
+                    rules={[
+                      { required: true, message: 'Required' },
+                      { min: 2, message: 'Minimum 2 characters' },
+                    ]}
                   >
-                    Organization Details
-                  </Title>
-                  <Text
-                    style={{
-                      fontSize: '14px',
-                      color: isDark ? colors.textSecondaryDark : colors.textSecondary,
-                    }}
+                    <Input 
+                      placeholder="John"
+                      style={{ height: 44 }}
+                    />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item
+                    name="last_name"
+                    label="Last Name"
+                    rules={[
+                      { required: true, message: 'Required' },
+                      { min: 2, message: 'Minimum 2 characters' },
+                    ]}
                   >
-                    Your professional information
-                  </Text>
-                </div>
+                    <Input 
+                      placeholder="Doe"
+                      style={{ height: 44 }}
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
 
-                <Form.Item
-                  name="organization"
-                  label={<Text strong>Organization</Text>}
-                  rules={[{ required: true, message: 'Required' }]}
+              <Form.Item
+                name="bio"
+                label={
+                  <span>
+                    Bio <Text type="secondary">(Optional)</Text>
+                  </span>
+                }
+              >
+                <TextArea
+                  rows={4}
+                  placeholder="Brief description about yourself..."
+                  maxLength={500}
+                  showCount
+                  style={{ resize: 'none' }}
+                />
+              </Form.Item>
+            </div>
+
+            <div style={{ display: currentStep === 1 ? 'block' : 'none' }}>
+              <div style={{ marginBottom: 32 }}>
+                <Title 
+                  level={3} 
+                  style={{ 
+                    marginBottom: 8,
+                    fontSize: 24,
+                    fontWeight: 600,
+                    color: isDark ? colors.textPrimaryDark : colors.textPrimary,
+                  }}
                 >
-                  <Input 
-                    size="large" 
-                    placeholder="Acme Corporation"
-                    prefix={<BankOutlined style={{ color: isDark ? colors.textTertiaryDark : colors.textTertiary }} />}
-                  />
-                </Form.Item>
-
-                <Row gutter={16}>
-                  <Col span={12}>
-                    <Form.Item
-                      name="job_title"
-                      label={<Text strong>Job Title</Text>}
-                      rules={[{ required: true, message: 'Required' }]}
-                    >
-                      <Input 
-                        size="large" 
-                        placeholder="Data Scientist"
-                        prefix={<IdcardOutlined style={{ color: isDark ? colors.textTertiaryDark : colors.textTertiary }} />}
-                      />
-                    </Form.Item>
-                  </Col>
-                  <Col span={12}>
-                    <Form.Item
-                      name="location"
-                      label={<Text strong>Location</Text>}
-                      rules={[{ required: true, message: 'Required' }]}
-                    >
-                      <Input 
-                        size="large" 
-                        placeholder="San Francisco, CA"
-                        prefix={<EnvironmentOutlined style={{ color: isDark ? colors.textTertiaryDark : colors.textTertiary }} />}
-                      />
-                    </Form.Item>
-                  </Col>
-                </Row>
+                  Organization Details
+                </Title>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    color: isDark ? colors.textSecondaryDark : colors.textSecondary,
+                  }}
+                >
+                  Your professional information
+                </Text>
               </div>
-            )}
 
-            {/* Step 3: Workspace */}
-            {currentStep === 2 && (
-              <div>
-                <div style={{ marginBottom: '32px' }}>
-                  <Title 
-                    level={4} 
-                    style={{ 
-                      marginBottom: '8px',
-                      fontWeight: 600,
-                      color: isDark ? colors.textPrimaryDark : colors.textPrimary,
-                    }}
+              <Form.Item
+                name="organization"
+                label="Organization"
+                rules={[{ required: true, message: 'Required' }]}
+              >
+                <Input 
+                  placeholder="Acme Corporation"
+                  prefix={<BankOutlined style={{ color: isDark ? colors.textTertiaryDark : colors.textTertiary }} />}
+                  style={{ height: 44 }}
+                />
+              </Form.Item>
+
+              <Row gutter={12}>
+                <Col span={12}>
+                  <Form.Item
+                    name="job_title"
+                    label="Job Title"
+                    rules={[{ required: true, message: 'Required' }]}
                   >
-                    Create Workspace
-                  </Title>
-                  <Text
-                    style={{
-                      fontSize: '14px',
-                      color: isDark ? colors.textSecondaryDark : colors.textSecondary,
-                    }}
+                    <Input 
+                      placeholder="Data Scientist"
+                      prefix={<IdcardOutlined style={{ color: isDark ? colors.textTertiaryDark : colors.textTertiary }} />}
+                      style={{ height: 44 }}
+                    />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item
+                    name="location"
+                    label="Location"
+                    rules={[{ required: true, message: 'Required' }]}
                   >
-                    Set up your team or personal workspace
-                  </Text>
-                </div>
+                    <Input 
+                      placeholder="San Francisco, CA"
+                      prefix={<EnvironmentOutlined style={{ color: isDark ? colors.textTertiaryDark : colors.textTertiary }} />}
+                      style={{ height: 44 }}
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+            </div>
 
-                <Form.Item
-                  name="workspace_name"
-                  label={<Text strong>Workspace Name</Text>}
-                  rules={[
-                    { required: true, message: 'Required' },
-                    { min: 3, message: 'Minimum 3 characters' },
-                  ]}
+            <div style={{ display: currentStep === 2 ? 'block' : 'none' }}>
+              <div style={{ marginBottom: 32 }}>
+                <Title 
+                  level={3} 
+                  style={{ 
+                    marginBottom: 8,
+                    fontSize: 24,
+                    fontWeight: 600,
+                    color: isDark ? colors.textPrimaryDark : colors.textPrimary,
+                  }}
                 >
-                  <Input
-                    size="large"
-                    placeholder="My Analytics Team"
-                    prefix={<TeamOutlined style={{ color: isDark ? colors.textTertiaryDark : colors.textTertiary }} />}
-                  />
-                </Form.Item>
-
-                <Row gutter={16}>
-                  <Col span={12}>
-                    <Form.Item
-                      name="workspace_type"
-                      label={<Text strong>Type</Text>}
-                      rules={[{ required: true, message: 'Required' }]}
-                    >
-                      <Select size="large" placeholder="Select type">
-                        <Option value="personal">Personal</Option>
-                        <Option value="team">Team</Option>
-                        <Option value="organization">Organization</Option>
-                        <Option value="client">Client</Option>
-                      </Select>
-                    </Form.Item>
-                  </Col>
-                  <Col span={12}>
-                    <Form.Item
-                      name="visibility"
-                      label={<Text strong>Visibility</Text>}
-                      rules={[{ required: true, message: 'Required' }]}
-                    >
-                      <Select size="large">
-                        <Option value="private">
-                          <Space>
-                            <LockOutlined />
-                            Private
-                          </Space>
-                        </Option>
-                        <Option value="internal">
-                          <Space>
-                            <EyeOutlined />
-                            Internal
-                          </Space>
-                        </Option>
-                        <Option value="public">
-                          <Space>
-                            <GlobalOutlined />
-                            Public
-                          </Space>
-                        </Option>
-                      </Select>
-                    </Form.Item>
-                  </Col>
-                </Row>
-
-                <Form.Item
-                  name="workspace_description"
-                  label={<Text strong>Description <Text type="secondary">(Optional)</Text></Text>}
+                  Create Workspace
+                </Title>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    color: isDark ? colors.textSecondaryDark : colors.textSecondary,
+                  }}
                 >
-                  <TextArea
-                    rows={3}
-                    placeholder="What will this workspace be used for..."
-                    maxLength={500}
-                    showCount
-                    style={{
-                      resize: 'none',
-                    }}
-                  />
-                </Form.Item>
+                  Set up your team or personal workspace
+                </Text>
               </div>
-            )}
 
-            {/* Navigation Buttons */}
+              <Form.Item
+                name="workspace_name"
+                label="Workspace Name"
+                rules={[
+                  { required: true, message: 'Required' },
+                  { min: 3, message: 'Minimum 3 characters' },
+                ]}
+              >
+                <Input
+                  placeholder="My Analytics Team"
+                  prefix={<TeamOutlined style={{ color: isDark ? colors.textTertiaryDark : colors.textTertiary }} />}
+                  style={{ height: 44 }}
+                />
+              </Form.Item>
+
+              <Row gutter={12}>
+                <Col span={12}>
+                  <Form.Item
+                    name="workspace_type"
+                    label="Type"
+                    rules={[{ required: true, message: 'Required' }]}
+                  >
+                    <Select placeholder="Select type" style={{ height: 44 }}>
+                      <Option value="personal">Personal</Option>
+                      <Option value="team">Team</Option>
+                      <Option value="organization">Organization</Option>
+                      <Option value="client">Client</Option>
+                    </Select>
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item
+                    name="visibility"
+                    label="Visibility"
+                    rules={[{ required: true, message: 'Required' }]}
+                  >
+                    <Select style={{ height: 44 }}>
+                      <Option value="private">
+                        <Space>
+                          <LockOutlined />
+                          Private
+                        </Space>
+                      </Option>
+                      <Option value="internal">
+                        <Space>
+                          <EyeOutlined />
+                          Internal
+                        </Space>
+                      </Option>
+                      <Option value="public">
+                        <Space>
+                          <GlobalOutlined />
+                          Public
+                        </Space>
+                      </Option>
+                    </Select>
+                  </Form.Item>
+                </Col>
+              </Row>
+
+              <Form.Item
+                name="workspace_description"
+                label={
+                  <span>
+                    Description <Text type="secondary">(Optional)</Text>
+                  </span>
+                }
+              >
+                <TextArea
+                  rows={4}
+                  placeholder="What will this workspace be used for..."
+                  maxLength={500}
+                  showCount
+                  style={{ resize: 'none' }}
+                />
+              </Form.Item>
+            </div>
+
             <div
               style={{
-                marginTop: '40px',
-                paddingTop: '24px',
+                marginTop: 40,
+                paddingTop: 24,
                 borderTop: `1px solid ${isDark ? colors.borderDark : colors.border}`,
                 display: 'flex',
                 justifyContent: 'space-between',
-                gap: '12px',
+                gap: 12,
               }}
             >
               <Button
@@ -550,7 +715,8 @@ const OnboardingPage: React.FC = () => {
                 disabled={currentStep === 0}
                 icon={<ArrowLeftOutlined />}
                 style={{
-                  minWidth: '120px',
+                  minWidth: 120,
+                  height: 44,
                 }}
               >
                 Previous
@@ -561,10 +727,12 @@ const OnboardingPage: React.FC = () => {
                   type="primary"
                   size="large"
                   onClick={handleNext}
-                  icon={<ArrowRightOutlined />}
                   iconPosition="end"
+                  icon={<ArrowRightOutlined />}
                   style={{
-                    minWidth: '120px',
+                    minWidth: 120,
+                    height: 44,
+                    fontWeight: 500,
                   }}
                 >
                   Continue
@@ -575,34 +743,35 @@ const OnboardingPage: React.FC = () => {
                   size="large"
                   onClick={handleSubmit}
                   loading={loading}
-                  icon={<CheckCircleOutlined />}
                   iconPosition="end"
+                  icon={<CheckCircleOutlined />}
                   style={{
-                    minWidth: '120px',
+                    minWidth: 120,
+                    height: 44,
+                    fontWeight: 500,
                   }}
                 >
                   Complete
                 </Button>
               )}
             </div>
-          </Form>
-        </Card>
 
-        {/* Footer */}
-        <div
-          style={{
-            marginTop: '24px',
-            textAlign: 'center',
-          }}
-        >
-          <Text
-            style={{
-              fontSize: '13px',
-              color: isDark ? colors.textTertiaryDark : colors.textTertiary,
-            }}
-          >
-            Step {currentStep + 1} of {steps.length}
-          </Text>
+            <div
+              style={{
+                marginTop: 24,
+                textAlign: 'center',
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 13,
+                  color: isDark ? colors.textTertiaryDark : colors.textTertiary,
+                }}
+              >
+                Step {currentStep + 1} of {steps.length}
+              </Text>
+            </div>
+          </Form>
         </div>
       </div>
     </div>

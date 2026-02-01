@@ -9,7 +9,7 @@ This is the first public release of NOVEM, a privacy-first data science platform
 #### Features
 
 - ✅ **Local-First Architecture**: All data and computation stay on your machine
-- ✅ **User Authentication**: Secure login with JWT tokens and Google Sign-In support
+- ✅ **User Authentication**: Secure login with JWT tokens
 - ✅ **Offline Mode**: Work seamlessly even without internet connection (7-day grace period)
 - ✅ **Project Management**: Create and organize data science projects
 - ✅ **Data Import**: Import CSV and Excel files for analysis
@@ -27,7 +27,6 @@ This is the first public release of NOVEM, a privacy-first data science platform
 
 #### Known Issues
 
-- Google Sign-In requires additional configuration
 - Email notifications not yet implemented
 - Community features in beta
 

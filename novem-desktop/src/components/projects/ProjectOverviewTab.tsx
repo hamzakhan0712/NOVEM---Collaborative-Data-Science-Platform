@@ -27,7 +27,7 @@ interface ProjectOverviewTabProps {
 }
 
 const ProjectOverviewTab: React.FC<ProjectOverviewTabProps> = ({ project }) => {
-  const [recentActivity, setRecentActivity] = useState<any[]>([]);
+  const [recentActivity] = useState<any[]>([]);
   const [, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -46,25 +46,7 @@ const ProjectOverviewTab: React.FC<ProjectOverviewTabProps> = ({ project }) => {
       ]);
       setStats(statsData);
       
-      // Mock recent activity for now
-      setRecentActivity([
-        {
-          id: 1,
-          type: 'dataset',
-          action: 'uploaded',
-          user: project.creator,
-          resource: 'sales_data.csv',
-          timestamp: new Date().toISOString(),
-        },
-        {
-          id: 2,
-          type: 'member',
-          action: 'joined',
-          user: project.creator,
-          resource: project.name,
-          timestamp: new Date(Date.now() - 3600000).toISOString(),
-        },
-      ]);
+      
     } catch (error) {
       console.error('Failed to load overview data:', error);
     } finally {

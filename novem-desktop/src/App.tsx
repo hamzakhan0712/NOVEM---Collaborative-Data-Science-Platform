@@ -21,6 +21,7 @@ import { Spin } from 'antd';
 import PasswordResetConfirmPage from './pages/PasswordResetConfirmPage';
 import SettingsPage from './pages/SettingsPage';
 
+
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, loading, needsOnboarding } = useAuth();
 
@@ -146,6 +147,7 @@ const AppRoutes: React.FC = () => {
           </PrivateRoute>
         }
       />
+
       <Route
         path="/settings/*"
         element={
@@ -154,6 +156,8 @@ const AppRoutes: React.FC = () => {
           </PrivateRoute>
         }
       />
+      
+      
       <Route path="/" element={<Navigate to="/dashboard" />} />
     </Routes>
   );

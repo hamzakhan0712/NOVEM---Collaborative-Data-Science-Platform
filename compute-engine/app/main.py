@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
-from app.api.routes import data, analysis, ml, viz
 import uvicorn
 
 app = FastAPI(
@@ -22,12 +21,6 @@ app.add_middleware(
 @app.get("/health")
 async def health_check():
     return {"status": "healthy", "version": settings.VERSION}
-
-# Include routers
-app.include_router(data.router, prefix="/api/data", tags=["data"])
-app.include_router(analysis.router, prefix="/api/analysis", tags=["analysis"])
-app.include_router(ml.router, prefix="/api/ml", tags=["machine-learning"])
-app.include_router(viz.router, prefix="/api/viz", tags=["visualization"])
 
 if __name__ == "__main__":
     uvicorn.run(

@@ -1,20 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, Divider, Alert, Typography, Space, Row, Col, Progress } from 'antd';
-import { UserOutlined, LockOutlined, MailOutlined, GoogleOutlined, WifiOutlined } from '@ant-design/icons';
+import React, { useState } from 'react';
+import { Form, Input, Button, Alert, Typography, Space, Row, Col, Progress } from 'antd';
+import { UserOutlined, LockOutlined, MailOutlined, WifiOutlined } from '@ant-design/icons';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useNavigate, Link } from 'react-router-dom';
 import ErrorAlert from '../components/common/ErrorAlert';
 import { colors } from '../theme/config';
 
+
 const { Title, Text } = Typography;
 
 const RegisterPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
   const [error, setError] = useState<any>(null);
-  const { register, loginWithGoogle, isOnline } = useAuth();
+  const { register, isOnline } = useAuth();
   const { theme } = useTheme();
   const navigate = useNavigate();
   const isDark = theme === 'dark';
@@ -48,28 +48,8 @@ const RegisterPage: React.FC = () => {
     }
   };
 
-  const handleGoogleRegister = async () => {
-    setGoogleLoading(true);
-    setError(null);
-    try {
-      await loginWithGoogle();
-      navigate('/onboarding');
-    } catch (err: any) {
-      setError(err);
-    } finally {
-      setGoogleLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    return () => {
-      const googleScript = document.querySelector('script[src="https://accounts.google.com/gsi/client"]');
-      if (googleScript) {
-        googleScript.remove();
-      }
-    };
-  }, []);
-
+ 
+  
   return (
     <div
       style={{
@@ -310,26 +290,6 @@ const RegisterPage: React.FC = () => {
                 style={{ marginBottom: 24 }}
               />
             )}
-
-            <div id="google-signin-button" style={{ marginBottom: 24 }}>
-              <Button
-                icon={<GoogleOutlined />}
-                onClick={handleGoogleRegister}
-                loading={googleLoading}
-                disabled={!isOnline}
-                block
-                size="large"
-                style={{ height: 44 }}
-              >
-                Sign up with Google
-              </Button>
-            </div>
-
-            <Divider plain style={{ margin: '24px 0' }}>
-              <Text type="secondary" style={{ fontSize: 13 }}>
-                or
-              </Text>
-            </Divider>
 
             <Form name="register" onFinish={onFinish} layout="vertical" size="large">
               <Form.Item

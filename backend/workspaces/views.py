@@ -26,6 +26,18 @@ class WorkspaceViewSet(viewsets.ModelViewSet):
     """
     permission_classes = [IsAuthenticated]
     
+    def get_serializer_class(self):
+        """Return appropriate serializer based on action"""
+        if self.action == 'create':
+            return WorkspaceCreateSerializer
+        elif self.action == 'retrieve':
+            return WorkspaceDetailSerializer
+        elif self.action in ['list', 'browse']:
+            return WorkspaceListSerializer
+        elif self.action == 'partial_update':
+            return WorkspaceCreateSerializer
+        return WorkspaceListSerializer
+    
     def get_queryset(self):
         """
         Return workspaces where user is a member or owner
@@ -51,12 +63,48 @@ class WorkspaceViewSet(viewsets.ModelViewSet):
         
         return queryset
     
-    def get_serializer_class(self):
-        if self.action == 'create':
-            return WorkspaceCreateSerializer
-        elif self.action == 'retrieve':
-            return WorkspaceDetailSerializer
-        return WorkspaceListSerializer
+    def partial_update(self, request, *args, **kwargs):
+        """Handle partial updates (PATCH) for avatar uploads"""
+        workspace = self.get_object()
+        
+        logger.info(f"📝 Partial update for workspace: {workspace.name}")
+        
+        # Check permissions
+        membership = workspace.workspacemembership_set.filter(user=request.user).first()
+        is_owner = workspace.owner == request.user
+        can_manage = is_owner or (membership and membership.can_manage_settings)
+        
+        if not can_manage:
+            return Response(
+                {'error': 'Only workspace owners/admins can update settings'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        # Handle file upload
+        if 'avatar' in request.FILES:
+            workspace.avatar = request.FILES['avatar']
+            workspace.save()
+            logger.info(f"✅ Avatar updated for workspace: {workspace.name}")
+        
+        # Handle other field updates
+        for field in ['name', 'description', 'workspace_type', 'visibility', 'website']:
+            if field in request.data:
+                setattr(workspace, field, request.data[field])
+        
+        workspace.save()
+        workspace.increment_sync_version()
+        
+        # Audit log
+        AuditLog.objects.create(
+            user=request.user,
+            action='workspace_updated',
+            resource_type='workspace',
+            resource_id=workspace.id,
+            details={'updated_fields': list(request.data.keys())}
+        )
+        
+        serializer = self.get_serializer(workspace)
+        return Response(serializer.data)
     
     def get_serializer_context(self):
         """Ensure request is always in serializer context"""

@@ -57,7 +57,20 @@ class Workspace(models.Model):
     require_join_approval = models.BooleanField(default=True)
     
     # Metadata
-    avatar = models.URLField(blank=True, null=True)
+    # Metadata - support both file upload and URL
+    avatar = models.ImageField(
+        upload_to='workspace_avatars/',
+        blank=True,
+        null=True,
+        help_text='Workspace avatar image file'
+    )
+    avatar_url = models.URLField(
+        blank=True,
+        null=True,
+        help_text='External avatar URL'
+    )
+
+    
     website = models.URLField(blank=True)
     
     created_at = models.DateTimeField(auto_now_add=True)
@@ -81,6 +94,16 @@ class Workspace(models.Model):
         """Increment version for offline sync tracking"""
         self.sync_version += 1
         self.save(update_fields=['sync_version'])
+        
+    @property
+    def get_avatar(self):
+        """Get avatar URL (prioritize uploaded file over URL)"""
+        if self.avatar:
+            try:
+                return self.avatar.url
+            except:
+                pass
+        return self.avatar_url
 
 class WorkspaceMembership(models.Model):
     """

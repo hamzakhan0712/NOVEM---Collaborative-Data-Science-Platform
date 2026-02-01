@@ -21,6 +21,7 @@ class WorkspaceListSerializer(serializers.ModelSerializer):
     project_count = serializers.SerializerMethodField()
     current_user_role = serializers.SerializerMethodField()
     current_user_permissions = serializers.SerializerMethodField()
+    avatar = serializers.SerializerMethodField()
     
     class Meta:
         model = Workspace
@@ -113,6 +114,10 @@ class WorkspaceListSerializer(serializers.ModelSerializer):
             'can_manage_settings': False,
             'can_delete_workspace': False,
         }
+    
+    def get_avatar(self, obj):
+        """Get avatar URL"""
+        return obj.get_avatar
 
 class WorkspaceDetailSerializer(WorkspaceListSerializer):
     memberships = WorkspaceMembershipSerializer(

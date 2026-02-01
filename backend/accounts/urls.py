@@ -23,13 +23,26 @@ urlpatterns = [
     # Current user (alternative)
     path('me/', views.current_user, name='current_user'),
     
-    # Password Reset
+    # Password Management
     path('password-reset/', views.PasswordResetRequestView.as_view(), name='password_reset'),
     path('password-reset/confirm/', views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    path('password/change/', views.ChangePasswordView.as_view(), name='change_password'),
+    
+    # Security Settings
+    path('security/settings/', views.SecuritySettingsView.as_view(), name='security_settings'),
+    
+    # Account Management
+    path('account/stats/', views.AccountStatsView.as_view(), name='account_stats'),
+    path('account/export/', views.ExportAccountDataView.as_view(), name='export_account_data'),
+    path('account/sessions/', views.ActiveSessionsView.as_view(), name='active_sessions'),
+    path('account/cache/clear/', views.ClearLocalCacheView.as_view(), name='clear_cache'),
+    path('account/delete/', views.DeleteAccountView.as_view(), name='delete_account'),
+    
+    # Notifications
+    path('notifications/', views.NotificationsView.as_view(), name='notifications'),
+    path('notifications/<int:notification_id>/read/', views.MarkNotificationReadView.as_view(), name='mark_notification_read'),
+    path('notifications/read-all/', views.MarkAllNotificationsReadView.as_view(), name='mark_all_notifications_read'),
     
     # Onboarding
     path('onboarding/complete/', views.CompleteOnboardingView.as_view(), name='complete_onboarding'),
-    
-    # Google OAuth
-    path('google/', views.GoogleAuthView.as_view(), name='google_auth'),
 ]

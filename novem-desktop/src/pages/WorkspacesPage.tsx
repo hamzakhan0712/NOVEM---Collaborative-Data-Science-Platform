@@ -146,6 +146,19 @@ const WorkspacesPage: React.FC = () => {
     },
   ];
 
+  const getAvatarUrl = (avatar: string | null | undefined) => {
+  if (!avatar) return null;
+  
+  // If it's already a full URL, use it
+  if (avatar.startsWith('http')) {
+    return avatar;
+  }
+  
+  // Prepend backend URL
+  const backendUrl = 'http://localhost:8000';
+  return `${backendUrl}${avatar}`;
+};
+
   return (
     <MainLayout>
       <div style={{ padding: '24px 32px', maxWidth: '1600px', margin: '0 auto' }}>
@@ -393,9 +406,9 @@ const WorkspacesPage: React.FC = () => {
                             flexShrink: 0,
                           }}
                         >
-                          {workspace.avatar ? (
+                          {getAvatarUrl(workspace.avatar) ? (
                             <img
-                              src={workspace.avatar}
+                              src={getAvatarUrl(workspace.avatar)!}
                               alt={workspace.name}
                               style={{
                                 width: '100%',

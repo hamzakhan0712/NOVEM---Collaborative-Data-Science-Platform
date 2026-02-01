@@ -23,6 +23,7 @@ interface Workspace {
     can_delete_workspace: boolean;
   };
   avatar?: string;
+  avatar_url?: string;
   created_at: string;
   updated_at: string;
   sync_version: number;
