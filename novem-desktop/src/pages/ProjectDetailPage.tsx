@@ -22,6 +22,7 @@ import {
   SettingOutlined,
   MoreOutlined,
   RobotOutlined,
+  ApiOutlined,
 } from '@ant-design/icons';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useProject } from '../contexts/ProjectContext';
@@ -29,12 +30,10 @@ import { useTheme } from '../contexts/ThemeContext';
 import { backendAPI } from '../services/api';
 import MainLayout from '../components/layout/MainLayout';
 import ProjectOverviewTab from '../components/projects/ProjectOverviewTab';
-import ProjectDatasetsTab from '../components/projects/ProjectDatasetsTab';
-import ProjectAnalysesTab from '../components/projects/ProjectAnalysesTab';
-import ProjectModelsTab from '../components/projects/ProjectModelsTab';
 import ProjectTeamTab from '../components/projects/ProjectTeamTab';
 import ProjectSettingsTab from '../components/projects/ProjectSettingsTab';
 import JoinRequestsBadge from '../components/projects/JoinRequestsBadge';
+
 import { colors } from '../theme/config';
 
 const { Title, Text } = Typography;
@@ -84,49 +83,31 @@ const ProjectDetailPage: React.FC = () => {
     },
   ];
 
-  const tabs = [
-    {
-      key: 'overview',
-      label: 'Overview',
-      icon: <HomeOutlined />,
-      children: <ProjectOverviewTab project={currentProject} />,
-    },
-    {
-      key: 'datasets',
-      label: 'Datasets',
-      icon: <DatabaseOutlined />,
-      children: <ProjectDatasetsTab project={currentProject} />,
-    },
-    {
-      key: 'analyses',
-      label: 'Analyses',
-      icon: <BarChartOutlined />,
-      children: <ProjectAnalysesTab project={currentProject} />,
-    },
-    {
-      key: 'models',
-      label: 'Models',
-      icon: <RobotOutlined />,
-      children: <ProjectModelsTab project={currentProject} />,
-    },
-    {
-      key: 'team',
-      label: 'Team',
-      icon: <TeamOutlined />,
-      children: (
-        <ProjectTeamTab
-          project={currentProject}
-          onUpdate={() => currentProject && refreshProject(currentProject.id)}
-        />
-      ),
-    },
-    {
-      key: 'settings',
-      label: 'Settings',
-      icon: <SettingOutlined />,
-      children: <ProjectSettingsTab project={currentProject} />,
-    },
-  ];
+  const tabs = currentProject ? [
+  {
+    key: 'overview',
+    label: 'Overview',
+    icon: <HomeOutlined />,
+    children: <ProjectOverviewTab project={currentProject} />,
+  },
+  {
+    key: 'team',
+    label: 'Team',
+    icon: <TeamOutlined />,
+    children: (
+      <ProjectTeamTab
+        project={currentProject}
+        onUpdate={() => currentProject && refreshProject(currentProject.id)}
+      />
+    ),
+  },
+  {
+    key: 'settings',
+    label: 'Settings',
+    icon: <SettingOutlined />,
+    children: <ProjectSettingsTab project={currentProject} />,
+  },
+] : [];
 
   if (loading || !currentProject) {
     return (

@@ -18,6 +18,7 @@ interface Project {
   created_at: string;
   updated_at: string;
   current_user_role?: string;
+  role?: string; 
   current_user_permissions?: {
     can_view_data: boolean;
     can_run_analysis: boolean;

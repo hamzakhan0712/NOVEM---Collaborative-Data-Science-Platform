@@ -862,183 +862,141 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
       <Layout style={{ marginTop: offlineMode && daysRemaining <= 3 ? 112 : 64 }}>
         {/* Sidebar */}
-<Sider
-  width={240}
-  collapsedWidth={64}
-  collapsed={collapsed}
-  trigger={null}
-  style={{
-    height: 'calc(100vh - 64px)',
-    position: 'fixed',
-    left: 0,
-    top: offlineMode && daysRemaining <= 3 ? 112 : 64,
-    bottom: 0,
-    overflowY: 'auto',
-    overflowX: 'hidden',
-    backgroundColor: isDark ? colors.backgroundSecondaryDark : colors.surfaceLight,
-    borderRight: `1px solid ${isDark ? colors.borderDark : colors.border}`,
-    transition: 'all 0.2s',
-  }}
->
-  <div style={{ padding: '20px 16px' }}>
-    <Menu
-      mode="inline"
-      selectedKeys={[getSelectedKey()]}
-      style={{
-        border: 'none',
-        backgroundColor: 'transparent',
-      }}
-      items={[
-        {
-          key: 'dashboard',
-          icon: <HomeOutlined style={{ fontSize: '16px' }} />,
-          label: collapsed ? null : (
-            <Text style={{ fontSize: '14px', fontWeight: 500 }}>
-              Dashboard
-            </Text>
-          ),
-          title: 'Dashboard',
-          onClick: () => navigate('/dashboard'),
-          style: { height: '44px', marginBottom: '4px', borderRadius: '6px' },
-        },
-        {
-          key: 'workspaces',
-          icon: <TeamOutlined style={{ fontSize: '16px' }} />,
-          label: collapsed ? null : (
-            <Text style={{ fontSize: '14px', fontWeight: 500 }}>
-              Workspaces
-            </Text>
-          ),
-          title: 'Workspaces',
-          onClick: () => navigate('/workspaces'),
-          style: { height: '44px', marginBottom: '4px', borderRadius: '6px' },
-        },
-        {
-          key: 'projects',
-          icon: <ProjectOutlined style={{ fontSize: '16px' }} />,
-          label: collapsed ? null : (
-            <Text style={{ fontSize: '14px', fontWeight: 500 }}>
-              Projects
-            </Text>
-          ),
-          title: 'Projects',
-          onClick: () => navigate('/projects'),
-          style: { height: '44px', marginBottom: '4px', borderRadius: '6px' },
-        },
-        {
-          key: 'browse',
-          icon: <SearchOutlined style={{ fontSize: '16px' }} />,
-          label: collapsed ? null : (
-            <Text style={{ fontSize: '14px', fontWeight: 500 }}>
-              Browse
-            </Text>
-          ),
-          title: 'Browse',
-          onClick: () => navigate('/browse'),
-          disabled: offlineMode,
-          style: { height: '44px', marginBottom: '16px', borderRadius: '6px' },
-        },
-        {
-          type: 'divider',
-          style: { margin: '0 0 16px 0' },
-        },
-        {
-          key: 'data',
-          icon: <DatabaseOutlined style={{ fontSize: '16px' }} />,
-          label: collapsed ? null : (
-            <Text style={{ fontSize: '14px', fontWeight: 500 }}>
-              Data Sources
-            </Text>
-          ),
-          title: 'Data Sources',
-          onClick: () => navigate('/data'),
-          disabled: offlineMode,
-          style: { height: '44px', marginBottom: '4px', borderRadius: '6px' },
-        },
-        {
-          key: 'analytics',
-          icon: <BarChartOutlined style={{ fontSize: '16px' }} />,
-          label: collapsed ? null : (
-            <Text style={{ fontSize: '14px', fontWeight: 500 }}>
-              Analytics
-            </Text>
-          ),
-          title: 'Analytics',
-          onClick: () => navigate('/analytics'),
-          style: { height: '44px', marginBottom: '16px', borderRadius: '6px' },
-        },
-        {
-          type: 'divider',
-          style: { margin: '0 0 16px 0' },
-        },
-        {
-          key: 'community',
-          icon: <CloudOutlined style={{ fontSize: '16px' }} />,
-          label: collapsed ? null : (
-            <Text style={{ fontSize: '14px', fontWeight: 500 }}>
-              Community
-            </Text>
-          ),
-          title: 'Community',
-          onClick: () => navigate('/community'),
-          disabled: offlineMode,
-          style: { height: '44px', marginBottom: '4px', borderRadius: '6px' },
-        },
-        {
-          key: 'settings',
-          icon: <SettingOutlined style={{ fontSize: '16px' }} />,
-          label: collapsed ? null : (
-            <Text style={{ fontSize: '14px', fontWeight: 500 }}>
-              Settings
-            </Text>
-          ),
-          title: 'Settings',
-          onClick: () => navigate('/settings'),
-          style: { height: '44px', borderRadius: '6px' },
-        },
-      ]}
-    />
-  </div>
+        <Sider
+          width={240}
+          collapsedWidth={64}
+          collapsed={collapsed}
+          trigger={null}
+          style={{
+            height: 'calc(100vh - 64px)',
+            position: 'fixed',
+            left: 0,
+            top: offlineMode && daysRemaining <= 3 ? 112 : 64,
+            bottom: 0,
+            overflowY: 'auto',
+            overflowX: 'hidden',
+            backgroundColor: isDark ? colors.backgroundSecondaryDark : colors.surfaceLight,
+            borderRight: `1px solid ${isDark ? colors.borderDark : colors.border}`,
+            transition: 'all 0.2s',
+          }}
+        >
+          <div style={{ padding: '20px 16px' }}>
+            <Menu
+              mode="inline"
+              selectedKeys={[getSelectedKey()]}
+              style={{
+                border: 'none',
+                backgroundColor: 'transparent',
+              }}
+              items={[
+                {
+                  key: 'dashboard',
+                  icon: <HomeOutlined style={{ fontSize: '16px' }} />,
+                  label: collapsed ? null : (
+                    <Text style={{ fontSize: '14px', fontWeight: 500 }}>
+                      Dashboard
+                    </Text>
+                  ),
+                  title: 'Dashboard',
+                  onClick: () => navigate('/dashboard'),
+                  style: { height: '44px', marginBottom: '4px', borderRadius: '6px' },
+                },
+                {
+                  key: 'workspaces',
+                  icon: <TeamOutlined style={{ fontSize: '16px' }} />,
+                  label: collapsed ? null : (
+                    <Text style={{ fontSize: '14px', fontWeight: 500 }}>
+                      Workspaces
+                    </Text>
+                  ),
+                  title: 'Workspaces',
+                  onClick: () => navigate('/workspaces'),
+                  style: { height: '44px', marginBottom: '4px', borderRadius: '6px' },
+                },
+                {
+                  key: 'projects',
+                  icon: <ProjectOutlined style={{ fontSize: '16px' }} />,
+                  label: collapsed ? null : (
+                    <Text style={{ fontSize: '14px', fontWeight: 500 }}>
+                      Projects
+                    </Text>
+                  ),
+                  title: 'Projects',
+                  onClick: () => navigate('/projects'),
+                  style: { height: '44px', marginBottom: '4px', borderRadius: '6px' },
+                },
+                {
+                  key: 'browse',
+                  icon: <SearchOutlined style={{ fontSize: '16px' }} />,
+                  label: collapsed ? null : (
+                    <Text style={{ fontSize: '14px', fontWeight: 500 }}>
+                      Browse
+                    </Text>
+                  ),
+                  title: 'Browse',
+                  onClick: () => navigate('/browse'),
+                  disabled: offlineMode,
+                  style: { height: '44px', marginBottom: '16px', borderRadius: '6px' },
+                },
+                {
+                  type: 'divider',
+                  style: { margin: '0 0 16px 0' },
+                },
+                {
+                  key: 'settings',
+                  icon: <SettingOutlined style={{ fontSize: '16px' }} />,
+                  label: collapsed ? null : (
+                    <Text style={{ fontSize: '14px', fontWeight: 500 }}>
+                      Settings
+                    </Text>
+                  ),
+                  title: 'Settings',
+                  onClick: () => navigate('/settings'),
+                  style: { height: '44px', borderRadius: '6px' },
+                },
+              ]}
+            />
+          </div>
 
-  {/* Collapse Toggle */}
-  <div
-    style={{
-      position: 'absolute',
-      bottom: 0,
-      left: 0,
-      right: 0,
-      padding: '16px',
-      borderTop: `1px solid ${isDark ? colors.borderDark : colors.border}`,
-      backgroundColor: isDark ? colors.backgroundSecondaryDark : colors.surfaceLight,
-    }}
-  >
-    <Tooltip title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} placement="right">
-      <Button
-        type="text"
-        block
-        icon={
-          collapsed ? (
-            <MenuUnfoldOutlined style={{ fontSize: '16px' }} />
-          ) : (
-            <MenuFoldOutlined style={{ fontSize: '16px' }} />
-          )
-        }
-        onClick={() => setCollapsed(!collapsed)}
-        style={{
-          height: '40px',
-          color: isDark ? colors.textSecondaryDark : colors.textSecondary,
-          fontWeight: 500,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: collapsed ? 'center' : 'flex-start',
-          gap: '12px',
-        }}
-      >
-        {!collapsed && <Text style={{ fontSize: '14px' }}>Collapse</Text>}
-      </Button>
-    </Tooltip>
-  </div>
-</Sider>
+          {/* Collapse Toggle */}
+          <div
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              padding: '16px',
+              borderTop: `1px solid ${isDark ? colors.borderDark : colors.border}`,
+              backgroundColor: isDark ? colors.backgroundSecondaryDark : colors.surfaceLight,
+            }}
+          >
+            <Tooltip title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} placement="right">
+              <Button
+                type="text"
+                block
+                icon={
+                  collapsed ? (
+                    <MenuUnfoldOutlined style={{ fontSize: '16px' }} />
+                  ) : (
+                    <MenuFoldOutlined style={{ fontSize: '16px' }} />
+                  )
+                }
+                onClick={() => setCollapsed(!collapsed)}
+                style={{
+                  height: '40px',
+                  color: isDark ? colors.textSecondaryDark : colors.textSecondary,
+                  fontWeight: 500,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: collapsed ? 'center' : 'flex-start',
+                  gap: '12px',
+                }}
+              >
+                {!collapsed && <Text style={{ fontSize: '14px' }}>Collapse</Text>}
+              </Button>
+            </Tooltip>
+          </div>
+        </Sider>
 
         {/* Main Content */}
         <Layout

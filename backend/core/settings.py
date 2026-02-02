@@ -33,9 +33,7 @@ INSTALLED_APPS = [
     'projects',
     'audit',
     'workspaces',
-    'datasources',      # NEW
-    'pipelines',        # NEW
-    'datasets',         # NEW
+
 ]
 
 MIDDLEWARE = [
@@ -269,25 +267,5 @@ LOGGING = {
         },
     },
 }
-
-# Generate with: python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
-ENCRYPTION_KEY = os.environ.get('ENCRYPTION_KEY', 'GENERATE_A_NEW_KEY_FOR_PRODUCTION')
-
-# NEW: DuckDB storage path
-DUCKDB_STORAGE_PATH = os.path.join(BASE_DIR, 'data', 'duckdb')
-os.makedirs(DUCKDB_STORAGE_PATH, exist_ok=True)
-
-# NEW: Celery Configuration (for async pipeline execution)
-CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379/0')
-CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TIMEZONE = 'UTC'
-
-
-
-
-
 
 

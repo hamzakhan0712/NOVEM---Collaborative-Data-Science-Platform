@@ -746,242 +746,6 @@ async deleteProfilePhoto() {
     return response.data;
   }
 
-
-
-    // ==================== DATA SOURCES ====================
-  
-  async getDataSources(params?: { project?: number; workspace?: number }) {
-    const response = await this.client.get('/data-sources/sources/', { params });
-    return response.data;
-  }
-
-  async getDataSource(id: number) {
-    const response = await this.client.get(`/data-sources/sources/${id}/`);
-    return response.data;
-  }
-
-  async createDataSource(data: any) {
-    const response = await this.client.post('/data-sources/sources/', data);
-    return response.data;
-  }
-
-  async updateDataSource(id: number, data: any) {
-    const response = await this.client.put(`/data-sources/sources/${id}/`, data);
-    return response.data;
-  }
-
-  async deleteDataSource(id: number) {
-    await this.client.delete(`/data-sources/sources/${id}/`);
-  }
-
-  async testDataSourceConnection(id: number, credentials?: any) {
-    const response = await this.client.post(
-      `/data-sources/sources/${id}/test-connection/`,
-      { credentials }
-    );
-    return response.data;
-  }
-
-  async grantDataSourceAccess(id: number, userId: number, permissions: any) {
-    const response = await this.client.post(
-      `/data-sources/sources/${id}/grant-access/`,
-      { user_id: userId, permissions }
-    );
-    return response.data;
-  }
-
-  async revokeDataSourceAccess(id: number, userId: number) {
-    await this.client.delete(`/data-sources/sources/${id}/revoke-access/${userId}/`);
-  }
-
-  async getDataSourceConnectionLogs(id: number) {
-    const response = await this.client.get(`/data-sources/sources/${id}/connection-logs/`);
-    return response.data;
-  }
-
-  // ==================== PIPELINES ====================
-
-  async getPipelines(params?: { project?: number; data_source?: number }) {
-    const response = await this.client.get('/pipelines/pipelines/', { params });
-    return response.data;
-  }
-
-  async getPipeline(id: number) {
-    const response = await this.client.get(`/pipelines/pipelines/${id}/`);
-    return response.data;
-  }
-
-  async createPipeline(data: any) {
-    const response = await this.client.post('/pipelines/pipelines/', data);
-    return response.data;
-  }
-
-  async updatePipeline(id: number, data: any) {
-    const response = await this.client.put(`/pipelines/pipelines/${id}/`, data);
-    return response.data;
-  }
-
-  async deletePipeline(id: number) {
-    await this.client.delete(`/pipelines/pipelines/${id}/`);
-  }
-
-  async executePipeline(id: number, overrideConfig?: any) {
-    const response = await this.client.post(
-      `/pipelines/pipelines/${id}/execute/`,
-      { override_config: overrideConfig }
-    );
-    return response.data;
-  }
-
-  async cancelPipeline(id: number) {
-    const response = await this.client.post(`/pipelines/pipelines/${id}/cancel/`);
-    return response.data;
-  }
-
-  async validatePipelineConfig(id: number, config: any) {
-    const response = await this.client.post(
-      `/pipelines/pipelines/${id}/validate/`,
-      { config }
-    );
-    return response.data;
-  }
-
-  async getPipelineExecutions(id: number) {
-    const response = await this.client.get(`/pipelines/pipelines/${id}/executions/`);
-    return response.data;
-  }
-
-  async getPipelineStats(id: number) {
-    const response = await this.client.get(`/pipelines/pipelines/${id}/stats/`);
-    return response.data;
-  }
-
-  async estimatePipelineResources(config: any, dataSourceId: number) {
-    const response = await this.client.post('/pipelines/pipelines/estimate-resources/', {
-      config,
-      data_source_id: dataSourceId
-    });
-    return response.data;
-  }
-
-  // ==================== PIPELINE EXECUTIONS ====================
-
-  async getExecutions(params?: { pipeline?: number; status?: string }) {
-    const response = await this.client.get('/pipelines/executions/', { params });
-    return response.data;
-  }
-
-  async getExecution(id: number) {
-    const response = await this.client.get(`/pipelines/executions/${id}/`);
-    return response.data;
-  }
-
-  async getExecutionLogs(id: number) {
-    const response = await this.client.get(`/pipelines/executions/${id}/logs/`);
-    return response.data;
-  }
-
-  async retryExecution(id: number) {
-    const response = await this.client.post(`/pipelines/executions/${id}/retry/`);
-    return response.data;
-  }
-
-  // ==================== DATASETS ====================
-
-  async getDatasets(params?: { project?: number; pipeline?: number }) {
-    const response = await this.client.get('/datasets/datasets/', { params });
-    return response.data;
-  }
-
-  async getDataset(id: number) {
-    const response = await this.client.get(`/datasets/datasets/${id}/`);
-    return response.data;
-  }
-
-  async createDataset(data: any) {
-    const response = await this.client.post('/datasets/datasets/', data);
-    return response.data;
-  }
-
-  async updateDataset(id: number, data: any) {
-    const response = await this.client.patch(`/datasets/datasets/${id}/`, data);
-    return response.data;
-  }
-
-  async deleteDataset(id: number) {
-    await this.client.delete(`/datasets/datasets/${id}/`);
-  }
-
-  async profileDataset(id: number, options?: any) {
-    const response = await this.client.post(
-      `/datasets/datasets/${id}/profile/`,
-      options || {}
-    );
-    return response.data;
-  }
-
-  async queryDataset(id: number, sql: string, limit: number = 1000) {
-    const response = await this.client.post(`/datasets/datasets/${id}/query/`, {
-      query: sql,
-      limit
-    });
-    return response.data;
-  }
-
-  async createDatasetSnapshot(id: number, snapshotName: string, description?: string) {
-    const response = await this.client.post(`/datasets/datasets/${id}/snapshot/`, {
-      snapshot_name: snapshotName,
-      description
-    });
-    return response.data;
-  }
-
-  async getDatasetSnapshots(id: number) {
-    const response = await this.client.get(`/datasets/datasets/${id}/snapshots/`);
-    return response.data;
-  }
-
-  async getDatasetLineage(id: number) {
-    const response = await this.client.get(`/datasets/datasets/${id}/lineage/`);
-    return response.data;
-  }
-
-  async getDatasetStats(id: number) {
-    const response = await this.client.get(`/datasets/datasets/${id}/stats/`);
-    return response.data;
-  }
-
-  async compareDatasets(dataset1Id: number, dataset2Id: number) {
-    const response = await this.client.post('/datasets/datasets/compare/', {
-      dataset_id_1: dataset1Id,
-      dataset_id_2: dataset2Id
-    });
-    return response.data;
-  }
-
-  // ==================== ANALYSIS STEPS ====================
-
-  async getAnalysisSteps(params?: { project?: number; dataset?: number }) {
-    const response = await this.client.get('/datasets/analysis-steps/', { params });
-    return response.data;
-  }
-
-  async getAnalysisStep(id: number) {
-    const response = await this.client.get(`/datasets/analysis-steps/${id}/`);
-    return response.data;
-  }
-
-  async createAnalysisStep(data: any) {
-    const response = await this.client.post('/datasets/analysis-steps/', data);
-    return response.data;
-  }
-
-  async reproduceAnalysisStep(id: number) {
-    const response = await this.client.post(`/datasets/analysis-steps/${id}/reproduce/`);
-    return response.data;
-  }
-
-
   // Cleanup on app unmount
   public cleanup() {
     if (this.tokenRefreshTimer) {
@@ -989,6 +753,163 @@ async deleteProfilePhoto() {
       this.tokenRefreshTimer = null;
     }
   }
+
+  // ========================================
+  // DATA SOURCES
+  // ========================================
+
+  async getDataSources(params?: any) {
+    const response = await this.client.get('/datasources/', { params });
+    return response.data;
+  }
+
+  async getDataSource(id: number) {
+    const response = await this.client.get(`/datasources/${id}/`);
+    return response.data;
+  }
+
+  async createDataSource(data: any) {
+    const response = await this.client.post('/datasources/', data);
+    return response.data;
+  }
+
+  async updateDataSource(id: number, data: any) {
+    const response = await this.client.patch(`/datasources/${id}/`, data);
+    return response.data;
+  }
+
+  async deleteDataSource(id: number) {
+    await this.client.delete(`/datasources/${id}/`);
+  }
+
+  async testDataSourceConnection(id: number, credentials?: any) {
+    const response = await this.client.post(`/datasources/${id}/test-connection/`, { credentials });
+    return response.data;
+  }
+
+  async getDataSourceConnectionLogs(id: number) {
+    const response = await this.client.get(`/datasources/${id}/connection-logs/`);
+    return response.data;
+  }
+
+  // ========================================
+  // PIPELINES
+  // ========================================
+
+  async getPipelines(params?: any) {
+    const response = await this.client.get('/pipelines/', { params });
+    return response.data;
+  }
+
+  async getPipeline(id: number) {
+    const response = await this.client.get(`/pipelines/${id}/`);
+    return response.data;
+  }
+
+  async createPipeline(data: any) {
+    const response = await this.client.post('/pipelines/', data);
+    return response.data;
+  }
+
+  async updatePipeline(id: number, data: any) {
+    const response = await this.client.patch(`/pipelines/${id}/`, data);
+    return response.data;
+  }
+
+  async deletePipeline(id: number) {
+    await this.client.delete(`/pipelines/${id}/`);
+  }
+
+  async executePipeline(id: number, overrideConfig?: any) {
+    const response = await this.client.post(`/pipelines/${id}/execute/`, { override_config: overrideConfig });
+    return response.data;
+  }
+
+  async cancelPipeline(id: number) {
+    const response = await this.client.post(`/pipelines/${id}/cancel/`);
+    return response.data;
+  }
+
+  async validatePipelineConfig(id: number, config: any) {
+    const response = await this.client.post(`/pipelines/${id}/validate/`, { config });
+    return response.data;
+  }
+
+  async getPipelineExecutions(pipelineId: number) {
+    const response = await this.client.get(`/pipelines/${pipelineId}/executions/`);
+    return response.data;
+  }
+
+  async getExecutionLogs(executionId: number) {
+    const response = await this.client.get(`/pipelines/executions/${executionId}/logs/`);
+    return response.data;
+  }
+
+  async retryExecution(executionId: number) {
+    const response = await this.client.post(`/pipelines/executions/${executionId}/retry/`);
+    return response.data;
+  }
+
+  async getPipelineStats(pipelineId: number) {
+    const response = await this.client.get(`/pipelines/${pipelineId}/stats/`);
+    return response.data;
+  }
+
+  async estimatePipelineResources(config: any, dataSourceId: number) {
+    const response = await this.client.post('/pipelines/estimate-resources/', { 
+      config, 
+      data_source_id: dataSourceId 
+    });
+    return response.data;
+  }
+
+  // ========================================
+  // DATASETS
+  // ========================================
+
+  async getDatasets(params?: any) {
+    const response = await this.client.get('/datasets/', { params });
+    return response.data;
+  }
+
+  async getDataset(id: number) {
+    const response = await this.client.get(`/datasets/${id}/`);
+    return response.data;
+  }
+
+  async createDataset(data: any) {
+    const response = await this.client.post('/datasets/', data);
+    return response.data;
+  }
+
+  async updateDataset(id: number, data: any) {
+    const response = await this.client.patch(`/datasets/${id}/`, data);
+    return response.data;
+  }
+
+  async deleteDataset(id: number) {
+    await this.client.delete(`/datasets/${id}/`);
+  }
+
+  async getDatasetVersions(datasetId: number) {
+    const response = await this.client.get(`/datasets/${datasetId}/versions/`);
+    return response.data;
+  }
+
+  async getDatasetLineage(datasetId: number) {
+    const response = await this.client.get(`/datasets/${datasetId}/lineage/`);
+    return response.data;
+  }
+
+  async compareDatasetVersions(version1Id: number, version2Id: number) {
+    const response = await this.client.post('/datasets/versions/compare/', {
+      version1_id: version1Id,
+      version2_id: version2Id
+    });
+    return response.data;
+  }
+
+
 }
 
 export const backendAPI = new BackendAPIService();
